@@ -123,6 +123,7 @@ def get_path():
         p.mkdir(parents=True)
     return str(p)
 
+
 class MLP(nn.Module):
     def __init__(self, blocks, in_features=28*28, n_classes=10,  bias=True):
         super().__init__()
@@ -145,10 +146,11 @@ class MLP(nn.Module):
         return self.stack(self.flatten(X))
 
 def make_teacher_model(bias=True):
-    return  MLP(blocks=[128, 64, 32], bias=bias).to(device)
+    return MLP(blocks=[128, 64, 32], bias=bias).to(device)
+
 
 def make_student_model(bias=True):
-    return  MLP(blocks=[256, 128, 64], bias=bias).to(device)
+    return MLP(blocks=[256, 128, 64], bias=bias).to(device)
 
 
 def test_loop_noise(model, history, mask, dataloader, epses):
