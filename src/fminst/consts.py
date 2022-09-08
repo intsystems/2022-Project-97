@@ -25,3 +25,6 @@ student_5_learning_rate = 1e-4
 noise_eps = [i/100 for i in range(10)]
 
 fsgm_eps = [i/500 for i in range(10)]
+
+teacher_blocks = [128, 64, 32]
+student_blocks =  [256, 128, 64]

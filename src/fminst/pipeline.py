@@ -11,7 +11,7 @@ import IPython
 from IPython.display import clear_output
 
 
-from consts import batch_size, data_path, num_workers, device, use_colab, local_path, colab_path
+from consts import batch_size, data_path, num_workers, device, use_colab, local_path, colab_path, teacher_blocks, student_blocks
 
 
 def get_data():
@@ -146,11 +146,11 @@ class MLP(nn.Module):
         return self.stack(self.flatten(X))
 
 def make_teacher_model(bias=True):
-    return MLP(blocks=[128, 64, 32], bias=bias).to(device)
+    return MLP(blocks=teacher_blocks, bias=bias).to(device)
 
 
 def make_student_model(bias=True):
-    return MLP(blocks=[256, 128, 64], bias=bias).to(device)
+    return MLP(blocks=student_blocks, bias=bias).to(device)
 
 
 def test_loop_noise(model, history, mask, dataloader, epses):
