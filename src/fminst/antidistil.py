@@ -34,10 +34,10 @@ def simple_baseline_change_weights(teacher_model, mode):
         weight, bias = get_weights(mode, weight_shape, bias_shape, student_model)
 
         weight[:weight_shape[0], :weight_shape[1]] = teacher_model.stack[i][0].weight
-        student_model.stack[i][0].weight = nn.Parameter(weight)
+        student_model.stack[i][0].weight = nn.Parameter(weight.to(device))
 
         bias[:bias_shape[0]] = teacher_model.stack[i][0].bias
-        student_model.stack[i][0].bias = nn.Parameter(bias)
+        student_model.stack[i][0].bias = nn.Parameter(bias.to(device))
 
     return student_model
 

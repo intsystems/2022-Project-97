@@ -9,7 +9,7 @@ colab_path = '/content/drive/MyDrive/models/'
 local_path = './models/'
 use_colab = False 
 
-num_repeats = 2
+num_repeats = 10
 
 
 full_teacher_training_epochs = 50

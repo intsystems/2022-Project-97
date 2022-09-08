@@ -2,7 +2,7 @@ from turtle import st
 import torch 
 import random
 from pipeline import MLP, make_student_model, make_teacher_model
-from consts import teacher_blocks, student_blocks
+from consts import teacher_blocks, student_blocks, device
 
 def mlp_to_unbiased_mlp(layers1, layers2):
     for l1, l2 in zip(layers1, layers2):
@@ -95,33 +95,34 @@ def unbiased_mlp_to_mlp(layers1, layers2):
     for l1, l2 in zip(layers1, layers2):
         if isinstance(l1, torch.nn.ReLU):
             continue
-        #print (l1, l2)
+            
+        #print (l1, l2)\        
         w1 = l1.weight.data.T
         w2 = l2.weight.data.T.clone()
-        print (l1, l1.weight.shape,  w1.shape, w2.shape)
+        
         w2 = w1[:-1, :-1]
         
-        l2.weight.data *= 0
+        l2.weight.data *= 0      
         l2.weight.data+=w2.T
         l2.bias.data *= 0
         l2.bias.data += w1[-1, :-1]
 
 
-def net2net_antidistil(teacher, student):
+def net2net_antidistil(teacher):
+    teacher =teacher.to('cpu')
+    student = make_student_model().to('cpu')
     unbiased_teacher = MLP(in_features=28*28+1, blocks= [t+1 for t in teacher_blocks], n_classes=11, bias=False)
     mlp_to_unbiased_mlp([l[0] for l in teacher.stack], [l[0] for l in unbiased_teacher.stack])
     
     unbiased_student = MLP(in_features=28*28+1, blocks= [t+1 for t in student_blocks], n_classes=11, bias=False)
-    print (unbiased_teacher, unbiased_student)
-
+    
     net2net_mlp([l[0] for l in unbiased_teacher.stack], [l[0] for l in unbiased_student.stack])
 
     unbiased_mlp_to_mlp([l[0] for l in unbiased_student.stack], [l[0] for l in student.stack])
-
     
-if __name__=='__main__':
-    teacher = make_teacher_model()
-    student = make_student_model()
+    return student.to(device)
+    
+if __name__=='__main__':    
     x = torch.randn(4, 28*28)
     net2net_antidistil(teacher, student)
     print (teacher(x) - student(x))

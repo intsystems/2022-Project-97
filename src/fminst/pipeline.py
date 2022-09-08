@@ -172,7 +172,7 @@ def test_loop_noise(model, history, mask, dataloader, epses):
                 X, y = X.to(device), y.to(device)
                 for p_old, p in zip(original_params, model.parameters()):
                     p.data *= 0
-                    p.data += p_old + torch.randn(p.data.shape) * eps 
+                    p.data += p_old + torch.randn(p.data.shape).to(device) * eps 
                     
                 pred = model(X) * mask
                 mask_idx = torch.as_tensor([bool(mask[elem]) for elem in y])
