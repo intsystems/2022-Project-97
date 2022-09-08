@@ -8,7 +8,7 @@ from pipeline import make_student_model
 cross_entropy = nn.CrossEntropyLoss()
 
 
-def get_weights(mode, weight_shape, bias_shape, student_model):
+def get_weights(mode, weight_shape, bias_shape, student_model, i):
     if mode == 'zero':
         weight = torch.zeros(weight_shape)
         bias = torch.zeros(bias_shape)
@@ -31,7 +31,7 @@ def simple_baseline_change_weights(teacher_model, mode):
         weight_shape = teacher_model.stack[i][0].weight.shape
         bias_shape = teacher_model.stack[i][0].bias.shape
 
-        weight, bias = get_weights(mode, weight_shape, bias_shape, student_model)
+        weight, bias = get_weights(mode, weight_shape, bias_shape, student_model, i)
 
         weight[:weight_shape[0], :weight_shape[1]] = teacher_model.stack[i][0].weight
         student_model.stack[i][0].weight = nn.Parameter(weight.to(device))
