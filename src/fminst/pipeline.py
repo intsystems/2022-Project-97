@@ -48,7 +48,7 @@ def get_data():
     return train_dataloader, test_dataloader
 
 
-def train_loop(model, history, mask,  dataloader, loss_fn, optimizer):
+def train_loop(model, history, mask,  dataloader, loss_fn, optimizer, noise_dist = None, noise_eps = 0.0):
 
     size = 0
     train_loss, correct = 0, 0
@@ -56,7 +56,14 @@ def train_loop(model, history, mask,  dataloader, loss_fn, optimizer):
 
     for batch, (X, y) in enumerate(tqdm(dataloader, leave=False, desc="Batch #")):
         X, y = X.to(device), y.to(device)
-
+        if noise_dist is not None:
+            if noise_dist == 'norm':
+                X = X + torch.randn(*X.shape).to(device) * noise_eps
+            elif noise_dist == 'uniform':
+                X = X + torch.rand(*X.shape).to(device) * noise_eps
+            else:
+                raise ValueError('bad noise distribution')
+                
         pred = model(X) * mask
         mask_idx = torch.as_tensor([bool(mask[elem]) for elem in y])
         y, pred = y[mask_idx], pred[mask_idx]
