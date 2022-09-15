@@ -48,7 +48,7 @@ def get_data():
     return train_dataloader, test_dataloader
 
 
-def train_loop(model, history, mask,  dataloader, loss_fn, optimizer, noise_dist = None, noise_eps = 0.0):
+def train_loop(model, history, mask,  dataloader, loss_fn, optimizer, noise_dist=None, noise_eps=0.0):
 
     size = 0
     train_loss, correct = 0, 0
