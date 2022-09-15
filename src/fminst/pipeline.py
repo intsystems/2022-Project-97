@@ -60,7 +60,7 @@ def train_loop(model, history, mask,  dataloader, loss_fn, optimizer, noise_dist
             if noise_dist == 'norm':
                 X = X + torch.randn(*X.shape).to(device) * noise_eps
             elif noise_dist == 'uniform':
-                X = X + torch.rand(*X.shape).to(device) * noise_eps
+                X = X + (torch.rand(*X.shape).to(device) - 1/2) * noise_eps
             else:
                 raise ValueError('bad noise distribution')
                 
