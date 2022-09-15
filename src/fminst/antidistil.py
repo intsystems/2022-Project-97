@@ -43,17 +43,21 @@ def simple_baseline_change_weights(teacher_model, mode):
 
 
 def L2(teacher_model, student_model):
-    norm = 0
+    params = []
 
     n = len(teacher_model.stack)
+
     for i in range(n):
         weight_shape = teacher_model.stack[i][0].weight.shape
         bias_shape = teacher_model.stack[i][0].bias.shape
 
-        norm += torch.norm(student_model.stack[i][0].weight[:weight_shape[0], :weight_shape[1]] - teacher_model.stack[i][0].weight)
-        norm += torch.norm(student_model.stack[i][0].bias[:bias_shape[0]] - teacher_model.stack[i][0].bias)
+        params.append((student_model.stack[i][0].weight[:weight_shape[0], :weight_shape[1]] - teacher_model.stack[i][0].weight).flatten())
+        params.append((student_model.stack[i][0].bias[:bias_shape[0]] - teacher_model.stack[i][0].bias).flatten())
+
+    norm = torch.norm(torch.cat(params))
 
     return norm
+
 
 def L4():
     return 0
