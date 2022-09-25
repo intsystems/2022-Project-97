@@ -23,7 +23,7 @@ teacher_5_learning_rate = 1e-4
 student_5_learning_rate = 1e-4 
 
 student_5_antidistil_epochs = 15
-student_5_antidistil_learning_rate = 1e-4 
+student_5_antidistil_learning_rate = 1e-3
 
 noise_eps = [i/100 for i in range(10)]
 
