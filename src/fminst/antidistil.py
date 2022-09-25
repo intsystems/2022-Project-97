@@ -62,11 +62,12 @@ def L2(teacher_model, student_model):
 def L4():
     return 0
 
-def altidistill_loss(pred, noise_pred, y, lambdas, teacher_model, init_uniform=False):
-    if init_uniform:
-        student_model = simple_baseline_change_weights(teacher_model, 'uniform')
-    else:
-        student_model = make_student_model()
+
+def altidistill_loss(pred, noise_pred, y, lambdas, teacher_model, student_model, init_uniform=False):
+    # if init_uniform:
+    #     student_model = simple_baseline_change_weights(teacher_model, 'uniform')
+    # else:
+    #     student_model = make_student_model()
 
     loss = lambdas[0] * cross_entropy(pred, y) + lambdas[1] * L2(teacher_model, student_model) + lambdas[2] * cross_entropy(noise_pred, y) + lambdas[3] * L4()
     return loss

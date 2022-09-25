@@ -7,9 +7,9 @@ print('Using {} device'.format(device))
 
 colab_path = '/content/drive/MyDrive/models/'
 local_path = './models/'
-use_colab = False 
+use_colab = True 
 
-num_repeats = 10
+num_repeats = 5
 
 
 full_teacher_training_epochs = 50
@@ -21,6 +21,9 @@ teacher_5_training_epochs = 30
 student_5_training_epochs = 30
 teacher_5_learning_rate = 1e-4
 student_5_learning_rate = 1e-4 
+
+student_5_antidistil_epochs = 15
+student_5_antidistil_learning_rate = 1e-4 
 
 noise_eps = [i/100 for i in range(10)]
 
