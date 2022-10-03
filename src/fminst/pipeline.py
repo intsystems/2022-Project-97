@@ -89,7 +89,7 @@ def train_loop(model, history, mask, dataloader, loss_fn, optimizer, noise_dist=
     return history
 
 
-def antidistil_loop(teacher_model, student_model, lambdas, mask, dataloader, loss_fn, optimizer, noise_dist=None, noise_eps=0.0):
+def antidistil_loop(teacher_model, student_model, lambdas, mask, dataloader, loss_fn, optimizer, scheduler=None, noise_dist=None, noise_eps=0.0):
 
     size = 0
     train_loss, correct = 0, 0
@@ -124,13 +124,14 @@ def antidistil_loop(teacher_model, student_model, lambdas, mask, dataloader, los
         size += len(y)
         batches += 1
 
+    if scheduler is not None:
+        scheduler.step()
+
     train_loss /= batches
     correct /= size
 
     print(f'Train Loss: {train_loss}')
     print(f'Train Acc: {correct}')
-
-    #return history
 
 
 def test_loop(model, history, mask, dataloader, loss_fn):

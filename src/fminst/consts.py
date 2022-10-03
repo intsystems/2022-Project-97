@@ -9,7 +9,7 @@ colab_path = '/content/drive/MyDrive/models/'
 local_path = './models/'
 use_colab = True 
 
-num_repeats = 5
+num_repeats = 10
 
 
 full_teacher_training_epochs = 50
@@ -23,7 +23,7 @@ teacher_5_learning_rate = 1e-4
 student_5_learning_rate = 1e-4 
 
 student_5_antidistil_epochs = 15
-student_5_antidistil_learning_rate = 1e-3
+student_5_antidistil_learning_rate = 5e-3
 
 noise_eps = [i/100 for i in range(10)]
 
