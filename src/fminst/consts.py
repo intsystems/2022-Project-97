@@ -7,7 +7,7 @@ print('Using {} device'.format(device))
 
 colab_path = '/content/drive/MyDrive/models/'
 local_path = './models/'
-use_colab = True 
+use_colab = False
 
 num_repeats = 10
 
@@ -19,8 +19,8 @@ full_student_learning_rate = 1e-4
 
 teacher_5_training_epochs = 30
 student_5_training_epochs = 30
-teacher_5_learning_rate = 1e-4
-student_5_learning_rate = 1e-4 
+teacher_5_learning_rate = 1e-2
+student_5_learning_rate = 1e-3 
 
 student_5_antidistil_epochs = 15
 student_5_antidistil_learning_rate = 5e-3
@@ -31,3 +31,5 @@ fsgm_eps = [i/500 for i in range(10)]
 
 teacher_blocks = [128, 64, 32]
 student_blocks =  [256, 128, 64]
+
+teacher_5_scheduler = lambda opt: torch.optim.lr_scheduler.MultiStepLR(opt, [10], gamma=0.1, last_epoch=- 1, verbose=False)
