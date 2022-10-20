@@ -18,7 +18,7 @@ full_teacher_learning_rate = 1e-4
 full_student_learning_rate = 1e-4 
 
 teacher_5_training_epochs = 30
-student_5_training_epochs = 30
+student_5_training_epochs = 10
 teacher_5_learning_rate = 1e-2
 student_5_learning_rate = 1e-3 
 

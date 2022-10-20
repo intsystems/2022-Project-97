@@ -48,7 +48,7 @@ def get_data():
     return train_dataloader, test_dataloader
 
 
-def train_loop(model, history, mask, dataloader, loss_fn, optimizer, noise_dist=None, noise_eps=0.0):
+def train_loop(model, history, mask, dataloader, loss_fn, optimizer, noise_dist=None, noise_eps=0.0, batch_mod=50):
 
     size = 0
     train_loss, correct = 0, 0
@@ -79,6 +79,8 @@ def train_loop(model, history, mask, dataloader, loss_fn, optimizer, noise_dist=
 
         size += len(y)
         batches += 1
+        if batch % batch_mod == 0:
+            test_loop(model, history, mask, dataloader, loss_fn, quiet=True)
 
     train_loss /= batches
     correct /= size
@@ -134,13 +136,16 @@ def antidistil_loop(teacher_model, student_model, lambdas, mask, dataloader, los
     print(f'Train Acc: {correct}')
 
 
-def test_loop(model, history, mask, dataloader, loss_fn):
+def test_loop(model, history, mask, dataloader, loss_fn, quiet=False):
     size = 0
     test_loss, correct = 0, 0
     batches = 0
-
+    if quiet:
+        range_ = dataloader
+    else:
+        rang_ = tqdm(dataloader, leave=False, desc="Batch #")
     with torch.no_grad():
-        for batch, (X, y) in enumerate(tqdm(dataloader, leave=False, desc="Batch #")):
+        for batch, (X, y) in enumerate(range_):
             X, y = X.to(device), y.to(device)
 
             pred = model(X) * mask
@@ -157,9 +162,9 @@ def test_loop(model, history, mask, dataloader, loss_fn):
 
     history['val_loss'].append(test_loss)
     history['val_acc'].append(correct)
-
-    print(
-        f"Validation accuracy: {(100*correct):>0.1f}%, Validation loss: {test_loss:>8f} \n")
+    if not quiet:
+        print(
+            f"Validation accuracy: {(100*correct):>0.1f}%, Validation loss: {test_loss:>8f} \n")
     return history
 
 
