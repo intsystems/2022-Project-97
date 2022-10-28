@@ -1,3 +1,5 @@
+import numpy as np
+
 import torch.nn as nn 
 import torch
 
@@ -59,15 +61,37 @@ def L2(teacher_model, student_model):
     return norm
 
 
-def L4():
-    return 0
+def L4(mlp, x, y, criterion, avg_num=1):
+    def model_from_params(params):
+        x_ = x.view(x.shape[0], -1)
+        real_params = list(mlp.parameters())
+        offset = 0
+        for i in range(len(real_params)//2):
+            weight_real = real_params[2*i]
+            bias_real = real_params[2*i+1]
+            
+            weight = params[offset:offset+np.prod(weight_real.shape)].reshape( -1, x_.shape[1])
+            offset += np.prod(weight_real.shape)
+            
+            bias = params[offset:offset+bias_real.shape[0]]
+            offset += bias.shape[0]
+            
+            x_ = (x_ @ weight.T) + bias
+            x_ = torch.nn.functional.relu(x_)
+        return criterion(x_, y)
+        
+    stack_params = torch.cat([p.flatten() for p in mlp.parameters()])
+    res = []
+    for _ in range(avg_num):
+        random_vector = torch.rand(stack_params.shape[0]).to(device)
+        res.append(random_vector @ torch.autograd.functional.hvp(model_from_params, stack_params, random_vector)[1])
+    return abs(sum(res)/avg_num)
 
 
-def altidistill_loss(pred, noise_pred, y, lambdas, teacher_model, student_model, init_uniform=False):
-    # if init_uniform:
-    #     student_model = simple_baseline_change_weights(teacher_model, 'uniform')
-    # else:
-    #     student_model = make_student_model()
-
-    loss = lambdas[0] * cross_entropy(pred, y) + lambdas[1] * L2(teacher_model, student_model) + lambdas[2] * cross_entropy(noise_pred, y) + lambdas[3] * L4()
+def altidistill_loss(pred, noise_pred, y, lambdas, teacher_model, student_model, X):
+    loss = 0
+    loss += lambdas[0] * cross_entropy(pred, y)
+    loss += lambdas[1] * L2(teacher_model, student_model)
+    loss += lambdas[2] * cross_entropy(noise_pred, y)
+    loss += lambdas[3] * L4(student_model, X, y, cross_entropy) / 10000
     return loss

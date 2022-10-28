@@ -112,9 +112,9 @@ def antidistil_loop(teacher_model, student_model, lambdas, mask, dataloader, los
                 
         noise_pred = student_model(X) * mask
         mask_idx = torch.as_tensor([bool(mask[elem]) for elem in y])
-        y, pred, noise_pred = y[mask_idx], pred[mask_idx], noise_pred[mask_idx]
+        X, y, pred, noise_pred = X[mask_idx], y[mask_idx], pred[mask_idx], noise_pred[mask_idx]
 
-        loss = loss_fn(pred, noise_pred, y, lambdas, teacher_model, student_model)
+        loss = loss_fn(pred, noise_pred, y, lambdas, teacher_model, student_model, X)
 
         optimizer.zero_grad()
         loss.backward()
@@ -202,6 +202,7 @@ class MLP(nn.Module):
     def forward(self, X):
         return self.stack(self.flatten(X))
 
+
 def make_teacher_model(bias=True):
     return MLP(blocks=teacher_blocks, bias=bias).to(device)
 
@@ -282,31 +283,3 @@ def test_loop_fsgm(model, history, mask, dataloader, loss_fn, epses):
     print ('FSGM Accuracy', history['fsgm_noise_acc'][-1])
 
     return history
-    
-
-def hessian_trace_reg(mlp, x, y, avg_num=1):
-    def model_from_params(params):
-        x_ = x
-        real_params = list(mlp.parameters())
-        offset = 0
-        for i in range(len(real_params)//2):
-            weight_real = real_params[2*i]
-            bias_real = real_params[2*i+1]
-            
-            weight = params[offset:offset+np.prod(weight_real.shape)].reshape( -1, x_.shape[1])
-            offset += np.prod(weight_real.shape)
-            
-            bias = params[offset:offset+bias_real.shape[0]]
-            offset += bias.shape[0]
-            
-            x_ = (x_@weight.T) + bias
-            x_ = torch.nn.functional.relu(x_)
-        return criterion(x_, y)
-        
-    stack_params = torch.cat([p.flatten() for p in model.parameters()])
-    res = []
-    for _ in range(avg_num):
-        random_vector = torch.rand(stack_params.shape[0])
-        res.append(random_vector @ torch.autograd.functional.hvp(model_from_params, stack_params, random_vector)[1])
-    return abs(sum(res)/avg_num)
-    
