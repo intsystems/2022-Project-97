@@ -143,7 +143,7 @@ def test_loop(model, history, mask, dataloader, loss_fn, quiet=False):
     if quiet:
         range_ = dataloader
     else:
-        rang_ = tqdm(dataloader, leave=False, desc="Batch #")
+        range_ = tqdm(dataloader, leave=False, desc="Batch #")
     with torch.no_grad():
         for batch, (X, y) in enumerate(range_):
             X, y = X.to(device), y.to(device)
