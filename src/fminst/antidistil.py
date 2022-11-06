@@ -90,12 +90,12 @@ def L4(mlp, x, y, criterion, avg_num=1):
 
 def altidistill_loss(pred, noise_pred, y, lambdas, teacher_model, student_model, X):
     loss = 0
-    if lambda[0]:
+    if lambdas[0]:
         loss += lambdas[0] * cross_entropy(pred, y)
-    if lambda[1]:
+    if lambdas[1]:
         loss += lambdas[1] * L2(teacher_model, student_model)
-    if lambda[2]:
+    if lambdas[2]:
         loss += lambdas[2] * cross_entropy(noise_pred, y)
-    if lambda[3]:
+    if lambdas[3]:
         loss += lambdas[3] * L4(student_model, X, y, cross_entropy) / 10000
     return loss
